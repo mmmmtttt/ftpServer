@@ -1,0 +1,14 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <EditTextPreference
+            app:key="port"
+            app:defaultValue="21"
+            app:title="@string/port_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="user_list"
+            android:title="@string/manage_users_label">
+        </Preference>
+</PreferenceScreen>
