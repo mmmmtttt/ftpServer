@@ -1,4 +1,4 @@
-package com.ss.ftpserver;
+package com.ss.ftpserver.gui;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ss.ftpserver.databinding.UserListItemLayoutBinding;
+import com.ss.ftpserver.ftpService.User;
 
 import java.util.List;
 

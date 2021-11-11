@@ -1,11 +1,12 @@
-package com.ss.ftpserver;
+package com.ss.ftpserver.ftpService;
 
 import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;import com.ss.ftpserver.ftpService.User;
+import com.ss.ftpserver.gui.MyApplication;
 
 import java.util.List;
 

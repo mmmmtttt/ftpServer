@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment">
+    android:id="@+id/fragment_home"
+    tools:context=".gui.HomeFragment">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_settings"
@@ -23,17 +24,19 @@
         android:orientation="vertical"
         android:layout_centerInParent="true">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
+        <ToggleButton
             android:id="@+id/start_stop_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/teal_700"
-            android:text="Start Server" />
+            android:textColor="@color/white"
+            android:textOff="Start Server"
+            android:textOn="Stop Server" />
 
+        <TextView
+            android:id="@+id/server_ip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

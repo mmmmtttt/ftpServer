@@ -2,8 +2,7 @@
     <string name="app_name">ftpServer</string>
     <!-- Preferences -->
     <string name="port_title">Port</string>
-    <string name="manage_users_label">User List</string>
+    <string name="manage_users_title">User List</string>
     <string name="delete">delete</string>
     <string name="edit">edit</string>
-
 </resources>

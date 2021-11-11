@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.ss.ftpserver.HomeFragment"
+        android:name="com.ss.ftpserver.gui.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.ss.ftpserver.SettingsFragment"
+        android:name="com.ss.ftpserver.gui.SettingsFragment"
         android:label="Settings" >
         <action
             android:id="@+id/action_settingsFragment_to_homeFragment"
@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/usersFragment"
-        android:name="com.ss.ftpserver.UsersFragment"
+        android:name="com.ss.ftpserver.gui.UsersFragment"
         android:label="User List"
         tools:layout="@layout/fragment_users" >
         <action

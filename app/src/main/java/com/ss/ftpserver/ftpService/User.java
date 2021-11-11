@@ -1,6 +1,7 @@
-package com.ss.ftpserver;
+package com.ss.ftpserver.ftpService;
 
 import com.google.gson.Gson;
+import com.ss.ftpserver.gui.MyApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ public class User {
     public String name;
     public String pass;
     public String path;
-    boolean isLegal;
+    public boolean isLegal;
 
     public User(String name,String pass,String path,boolean isLegal){
         this.name = name;

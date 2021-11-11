@@ -1,4 +1,4 @@
-package com.ss.ftpserver;
+package com.ss.ftpserver.gui;
 
 import android.os.Bundle;
 
@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.ss.ftpserver.R;
+import com.ss.ftpserver.ftpService.Settings;
 
 /**
  * A fragment representing a list of Users.

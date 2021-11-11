@@ -1,4 +1,4 @@
-package com.ss.ftpserver;
+package com.ss.ftpserver.gui;
 
 import android.app.Application;
 import android.content.Context;
