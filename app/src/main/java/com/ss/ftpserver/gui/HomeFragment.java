@@ -60,21 +60,6 @@ public class HomeFragment extends Fragment {
             }});
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        binding.fabSettings.setOnClickListener(view1 -> Navigation.findNavController(getView())
-                .navigate(R.id.action_homeFragment_to_settingsFragment));
-        loadSettings();
-    }
-
-    //TODO:在首页显示端口等配置信息
-    private void loadSettings() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        //Load preference
-        String port = sharedPreferences.getString("port", " ");
-        //给textview设置文字
-    }
-
     //Fragment 的存在时间比其视图长。在 Fragment 的 onDestroyView() 方法中清除对绑定类实例的所有引用。
     @Override
     public void onDestroyView() {

@@ -2,6 +2,10 @@ package com.ss.ftpserver.gui;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
 
 /**
  * 当Android程序启动时系统会创建一个Application对象，用来存储系统的一些信息

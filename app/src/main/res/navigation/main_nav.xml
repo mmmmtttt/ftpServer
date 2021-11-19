@@ -9,29 +9,27 @@
         android:id="@+id/homeFragment"
         android:name="com.ss.ftpserver.gui.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.ss.ftpserver.gui.SettingsFragment"
-        android:label="Settings" >
-        <action
-            android:id="@+id/action_settingsFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_usersFragment"
-            app:destination="@id/usersFragment" />
-    </fragment>
+        android:label="Settings" />
     <fragment
         android:id="@+id/usersFragment"
         android:name="com.ss.ftpserver.gui.UsersFragment"
         android:label="User List"
         tools:layout="@layout/fragment_users" >
         <action
-            android:id="@+id/action_usersFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            android:id="@+id/action_usersFragment_to_addUserFragment"
+            app:destination="@id/addUserFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/addUserFragment"
+        android:name="com.ss.ftpserver.gui.AddUserFragment"
+        android:label="Add User"
+        tools:layout="@layout/fragment_add_user" >
+        <action
+            android:id="@+id/action_addUserFragment_to_usersFragment"
+            app:destination="@id/usersFragment" />
+    </dialog>
 </navigation>

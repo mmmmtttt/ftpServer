@@ -3,12 +3,7 @@
 
         <EditTextPreference
             app:key="port"
-            app:defaultValue="21"
+            app:defaultValue="2121"
             app:title="@string/port_title"
             app:useSimpleSummaryProvider="true" />
-
-        <Preference
-            android:key="user_list"
-            android:title="@string/manage_users_title">
-        </Preference>
 </PreferenceScreen>

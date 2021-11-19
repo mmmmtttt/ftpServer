@@ -31,7 +31,6 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         holder.user = users.get(position);
         holder.name.setText(users.get(position).name);
         holder.pass.setText(users.get(position).pass);
-        holder.path.setText(users.get(position).path);
         holder.legal.setText(users.get(position).isLegal?"legal":"illegal");
     }
 
@@ -43,7 +42,6 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
     public class UserViewHolder extends RecyclerView.ViewHolder {
         public final TextView name;
         public final TextView pass;
-        public final TextView path;
         public final TextView legal;
         public User user;
 
@@ -51,7 +49,6 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             super(binding.getRoot());
             name = binding.userName;
             pass = binding.userPassword;
-            path = binding.userPath;
             legal = binding.userLegal;
         }
     }

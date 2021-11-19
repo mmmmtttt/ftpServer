@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="50dip">
+
+    <TextView
+        android:id="@+id/add_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/input_username"
+        android:gravity="center_vertical"
+        android:layout_marginRight="20dip"
+        android:text="Username:" />
+
+    <EditText
+        android:id="@+id/input_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/add_username"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+
+    <TextView
+        android:id="@+id/add_pass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_username"
+        android:layout_alignBottom="@id/input_pass"
+        android:layout_marginRight="20dip"
+        android:gravity="center_vertical"
+        android:text="Password:" />
+
+    <EditText
+        android:id="@+id/input_pass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_username"
+        android:layout_toRightOf="@id/add_pass"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+
+<!--    <RadioButton-->
+<!--        android:id="@+id/switch_legal"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/input_pass"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:layout_gravity="start"-->
+<!--        android:layout_marginTop="0dp"-->
+<!--        android:checked="true"-->
+<!--        android:showText="true"-->
+<!--        android:text="Legal User"-->
+<!--        android:textAlignment="textStart" />-->
+
+    <ToggleButton
+        android:id="@+id/toggle_legal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_pass"
+        android:showText="true"
+        android:textOn="legal"
+        android:textOff="illegal"/>
+
+    <Button
+        android:id="@+id/bt_save_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggle_legal"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="save" />
+
+</RelativeLayout>
+

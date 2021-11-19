@@ -1,11 +1,19 @@
 package com.ss.ftpserver.gui;
 
+import static androidx.navigation.Navigation.findNavController;
+
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,6 +24,14 @@ import com.ss.ftpserver.ftpService.Settings;
  * A fragment representing a list of Users.
  */
 public class UsersFragment extends Fragment {
+    NavController navController;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);//设置app bar上的添加按钮
+        navController = findNavController(getActivity().findViewById(R.id.fragment_main));
+        super.onActivityCreated(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -25,5 +41,17 @@ public class UsersFragment extends Fragment {
         recyclerView.setAdapter(new UserRecyclerViewAdapter(Settings.getUsers()));
         //TODO:处理每个edit和delete button
         return view;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        getActivity().getMenuInflater().inflate(R.menu.add_user_menu,menu);//设置app bar上的添加按钮
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        navController.navigate(R.id.action_usersFragment_to_addUserFragment);
+        return super.onOptionsItemSelected(item);
     }
 }

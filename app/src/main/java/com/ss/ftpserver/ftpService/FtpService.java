@@ -19,6 +19,7 @@ import com.ss.ftpserver.gui.HomeFragment;
 import com.ss.ftpserver.gui.MainActivity;
 
 public class FtpService extends Service {
+
     public FtpService() {
     }
 
@@ -31,7 +32,21 @@ public class FtpService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("FTPService","startCommand");
-        //发送前台服务的通知
+        setNotification();
+        new ServerMainThread().start();
+        return super.onStartCommand(intent, flags, startId);//返回START_STICKY，用于根据需要显式启动和停止的服务
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    /**
+     * 启动前台服务时显示通知
+     */
+    private void setNotification(){
         //设置通知渠道
         NotificationChannel chan = new NotificationChannel(
                 "MyChannelId",
@@ -47,17 +62,10 @@ public class FtpService extends Service {
                 .setContentTitle("ftp server")
                 .setContentText("server is running")
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pi)
                 .setAutoCancel(true)
                 .build();
         startForeground(1,notification);//开启前台任务，优先级更高，不会被系统自动回收
-        return super.onStartCommand(notifyIntent, flags, startId);
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 }

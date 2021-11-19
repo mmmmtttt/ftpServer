@@ -5,4 +5,6 @@
     <string name="manage_users_title">User List</string>
     <string name="delete">delete</string>
     <string name="edit">edit</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
