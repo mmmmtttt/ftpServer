@@ -1,14 +1,18 @@
 package com.ss.ftpserver.ftpService;
 
+import android.util.Log;
+
+import com.ss.ftpserver.exception.DataLinkOpenException;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -19,7 +23,9 @@ import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
 
 public class DataChannel {
-    ServerSocket pasvSocket;//被动模式下
+    private static final String TAG = "DataChannel";
+    ServerSocket pasvListenSocket;//被动模式下
+    Socket pasvClientSocket;
     Socket portSocket;//主动模式下
     boolean binaryMode;
     boolean portMode;
@@ -29,8 +35,8 @@ public class DataChannel {
         this.commandChannel = channel;
     }
 
-    public void setPasvSocket(ServerSocket pasvSocket) {
-        this.pasvSocket = pasvSocket;
+    public void setPasvListenSocket(ServerSocket pasvListenSocket) {
+        this.pasvListenSocket = pasvListenSocket;
         portMode = false;
     }
 
@@ -43,22 +49,28 @@ public class DataChannel {
         this.binaryMode = binaryMode;
     }
 
-    public void transferFile(File file) {
+    /**
+     * 针对两种模式发送文件，在上层对异常的处理中关闭socket数据连接
+     */
+    public void sendFile(File file) throws DataLinkOpenException, IOException {
         OutputStream out = null;
         try {
             if (portMode) {
                 out = portSocket.getOutputStream();
             } else {
-                out = pasvSocket.accept().getOutputStream();
+                commandChannel.writeResponse("150 File status okay; about to open data connection.");//提示客户端可以主动建立连接
+                pasvClientSocket = pasvListenSocket.accept();
+                out = pasvClientSocket.getOutputStream();
             }
-        } catch (IOException e) {
-            commandChannel.writeResponse("425 Can’t open data connection.");
-            return;
+        }catch (IOException e){
+            throw new DataLinkOpenException();
+        }catch (NullPointerException e){//socket为空
+            throw new DataLinkOpenException();
         }
         commandChannel.writeResponse("125 Data connection already open; transfer starting.");
 
         if (binaryMode) {//二进制流读写
-            try (
+            try (//try-with-resource，保证一定关闭流
                     BufferedOutputStream bo = new BufferedOutputStream(out);
                     BufferedInputStream bi = new BufferedInputStream(new FileInputStream(file))) {
                 byte[] buffer = new byte[1024];
@@ -66,9 +78,8 @@ public class DataChannel {
                 while ((bytesRead = bi.read(buffer)) != -1) {
                     bo.write(buffer);
                 }
-            } catch (Exception e) {
-                commandChannel.writeResponse("451 Requested action aborted: local error in processing.");
-                return;
+            } catch (IOException e) {
+                throw e;
             }
         } else {//ascii码模式
             try (
@@ -78,30 +89,63 @@ public class DataChannel {
                 while ((line = br.readLine()) != null) {
                     bw.write(line + "\r\n");
                 }
-            } catch (Exception e) {
-                commandChannel.writeResponse("451 Requested action aborted: local error in processing.");
-                return;
+            } catch (IOException e) {
+                throw e;
             }
         }
         commandChannel.writeResponse("250 Requested file action okay, completed.");
-        //TODO:关闭socket
+    }
+
+    public void receiveFile(File file) throws DataLinkOpenException, IOException {
+        InputStream in = null;
+        try {
+            if (portMode) {//主动模式
+                in = portSocket.getInputStream();
+            } else {//被动模式
+                commandChannel.writeResponse("150 File status okay; about to open data connection.");//提示客户端可以主动建立连接
+                pasvClientSocket = pasvListenSocket.accept();
+                in = pasvClientSocket.getInputStream();
+            }
+        } catch (IOException e) {
+            throw new DataLinkOpenException();
+        }
+        commandChannel.writeResponse("125 Data connection already open; transfer starting.");
+
+        if (binaryMode) {//二进制流读写
+            try (
+                    BufferedInputStream bi = new BufferedInputStream(in);
+                    BufferedOutputStream bo = new BufferedOutputStream(new FileOutputStream(file))) {
+                byte[] buffer = new byte[1024];
+                int bytesRead = 0;
+                while ((bytesRead = bi.read(buffer)) != -1) {
+                    bo.write(buffer);
+                }
+            } catch (IOException e) {
+                throw e;
+            }
+        } else {//ascii码模式
+            try (
+                    BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.US_ASCII));
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.US_ASCII))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    bw.write(line + "\r\n");
+                }
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+        commandChannel.writeResponse("250 Requested file action okay, completed.");
     }
 
     @SneakyThrows
     public void cleanUp() {
-        if (pasvSocket != null) {
-            pasvSocket.close();
-        }
-        if (portSocket != null) {
+        if (portMode){
             portSocket.close();
+        }else {
+            pasvListenSocket.close();
+            pasvClientSocket.close();
         }
-    }
-
-    public boolean readyTransfer() {
-        if (pasvSocket != null || portSocket != null) {
-            return true;
-        } else {
-            return false;
-        }
+        commandChannel.setDataChannel(null);
     }
 }

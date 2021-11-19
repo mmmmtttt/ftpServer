@@ -49,7 +49,7 @@ public class CommandChannel extends Thread {
                 if (closeConnection)
                     break;
             }
-        } finally {
+        } finally {//有任何异常释放资源
             cleanUp();
         }
     }
@@ -75,12 +75,17 @@ public class CommandChannel extends Thread {
         return dataChannel;
     }
 
+    public void setDataChannel(DataChannel dataChannel) {
+        this.dataChannel = dataChannel;
+    }
+
     public void writeResponse(String response) {
         try {
-            bw.write(response+"\r\n");
+            bw.write(response + "\r\n");
             bw.flush();
         } catch (IOException e) {
-            Log.e(TAG, "writeResponse: " + e.getMessage());;
+            Log.e(TAG, "writeResponse: " + e.getMessage());
+            ;
         }
     }
 
@@ -88,12 +93,10 @@ public class CommandChannel extends Thread {
      * 清理工作
      */
     @SneakyThrows
-    private void cleanUp(){
+    private void cleanUp() {
         //关闭数据通道和控制通道，与客户端的会话关闭
         cmdSocket.close();
         bw.close();
-        if (dataChannel!=null){
-            dataChannel.cleanUp();
-        }
+        dataChannel.cleanUp();
     }
 }

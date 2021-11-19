@@ -1,6 +1,7 @@
 package com.ss.ftpserver.ftpService;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
@@ -9,6 +10,10 @@ import com.google.gson.reflect.TypeToken;
 import com.ss.ftpserver.ftpService.User;
 import com.ss.ftpserver.gui.MyApplication;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -17,6 +22,7 @@ import java.util.List;
 public class Settings {
     static SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
     static List<User> userList = null;
+    static InetAddress ip = null;
 
     /**
      * 从sp 中得到存储的users数据
@@ -48,5 +54,34 @@ public class Settings {
 
     public static String getFilePath(){
         return MyApplication.getContext().getFilesDir().getPath();
+    }
+
+    /**
+     * 获取本机内网ip（要求客户端和服务器在同一局域网内）
+     */
+    public static InetAddress getLocalIpAddress(){
+        if (ip!=null){
+            return ip;
+        }
+        try {
+            Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (allNetInterfaces.hasMoreElements()) {
+                NetworkInterface netInterface = allNetInterfaces.nextElement();
+                if (netInterface.isLoopback() || netInterface.isVirtual() || !netInterface.isUp()) {
+                    continue;
+                } else {
+                    Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        ip = addresses.nextElement();
+                        if (ip != null && ip instanceof Inet4Address) {
+                            return ip;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("Utils", "getIpAddress:IP地址获取失败");
+        }
+        return null;
     }
 }

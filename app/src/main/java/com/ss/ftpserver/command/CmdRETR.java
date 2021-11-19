@@ -2,13 +2,16 @@ package com.ss.ftpserver.command;
 
 import android.util.Log;
 
+import com.ss.ftpserver.exception.DataLinkOpenException;
 import com.ss.ftpserver.ftpService.CommandChannel;
 import com.ss.ftpserver.ftpService.Settings;
 
 import java.io.File;
+import java.io.IOException;
 
 public class CmdRETR implements Command {
     private static final String TAG = "CmdRETR";
+
     /**
      * RETR <SP> <pathname> <CRLF>
      * causes the server-DTP to transfer a copy of the
@@ -23,10 +26,20 @@ public class CmdRETR implements Command {
         File file = new File(Settings.getFilePath() + File.separator + filename);
         if (!file.exists()) {
             channel.writeResponse("550 Requested action not taken. File not found.");
-        } else if (channel.getDataChannel() == null || !channel.getDataChannel().readyTransfer()) {
-            channel.writeResponse("425 Can’t open data connection.");
-        } else {
-            channel.getDataChannel().transferFile(file);
+        } else {//文件存在
+            if (channel.getDataChannel()!=null) {
+                channel.writeResponse("425 Can’t open data connection.Close data connection.");
+                return;
+            }
+            try {
+                channel.getDataChannel().sendFile(file);
+            } catch (DataLinkOpenException e) {
+                channel.writeResponse("425 Can’t open data connection.Close data connection.");
+            }  catch (IOException e) {
+                channel.writeResponse("451 Requested action aborted: local error in processing.");
+            } finally {//关闭socket连接
+                channel.getDataChannel().cleanUp();
+            }
         }
     }
 }

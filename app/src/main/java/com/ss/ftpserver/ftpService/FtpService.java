@@ -19,6 +19,7 @@ import com.ss.ftpserver.gui.HomeFragment;
 import com.ss.ftpserver.gui.MainActivity;
 
 public class FtpService extends Service {
+    ServerMainThread serverMainThread;
 
     public FtpService() {
     }
@@ -33,14 +34,9 @@ public class FtpService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("FTPService","startCommand");
         setNotification();
-        new ServerMainThread().start();
+        serverMainThread = new ServerMainThread();
+        serverMainThread.start();//开启服务器循环
         return super.onStartCommand(intent, flags, startId);//返回START_STICKY，用于根据需要显式启动和停止的服务
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 
     /**
@@ -59,13 +55,26 @@ public class FtpService extends Service {
         Intent notifyIntent = new Intent(this, MainActivity.class);
         PendingIntent pi = PendingIntent.getActivity(this,0,notifyIntent,PendingIntent.FLAG_IMMUTABLE);
         Notification notification = new NotificationCompat.Builder(this,"MyChannelId")
-                .setContentTitle("ftp server")
-                .setContentText("server is running")
+                .setContentTitle("ftp server is running at")
+                .setContentText(Settings.getLocalIpAddress().getHostAddress()+":"+Settings.getPort())
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pi)
                 .setAutoCancel(true)
                 .build();
         startForeground(1,notification);//开启前台任务，优先级更高，不会被系统自动回收
+    }
+
+    @Override
+    public void onDestroy() {
+        //释放资源
+        serverMainThread.cleanUp();
+        super.onDestroy();
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }

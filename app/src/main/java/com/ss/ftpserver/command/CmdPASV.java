@@ -3,6 +3,7 @@ package com.ss.ftpserver.command;
 import android.util.Log;
 
 import com.ss.ftpserver.ftpService.CommandChannel;
+import com.ss.ftpserver.ftpService.Settings;
 
 import java.net.ServerSocket;
 
@@ -13,6 +14,7 @@ public class CmdPASV implements Command{
     /**
      * 服务器随机打开一个端口，发送给客户端
      * 参数应该是空
+     * 默认模式
      */
     @SneakyThrows
     @Override
@@ -22,9 +24,9 @@ public class CmdPASV implements Command{
         int port = socket.getLocalPort();
         int p1 = port>>8;
         int p2 = port-(p1<<8);
-        String ip = Utils.getLocalIpAddress().getHostAddress();
+        String ip = Settings.getLocalIpAddress().getHostAddress();
         ip = ip.replace(".",",");
-        channel.getDataChannel().setPasvSocket(socket);
+        channel.getDataChannel().setPasvListenSocket(socket);
         channel.writeResponse("227 Entering Passive Mode ("+ip+","+p1+","+p2+").");
     }
 }
