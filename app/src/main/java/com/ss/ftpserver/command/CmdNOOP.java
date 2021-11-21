@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.ss.ftpserver.ftpService.CommandChannel;
 
-public class CmdNOOP implements Command{
+public class CmdNOOP extends Command{
     private static final String TAG = "CmdNOOP";
 
     /**
@@ -12,12 +12,12 @@ public class CmdNOOP implements Command{
      * arg应该是""
      */
     @Override
-    public void execute(String arg, CommandChannel channel) {
+    public void run() {
         Log.d(TAG, "execute: ");
         if ("".equals(arg)) {
-            channel.writeResponse("200 Command okay.");
+            cmdChannel.writeResponse("200 Command okay.");
         }else {
-            channel.writeResponse("500 Syntax error, command unrecognized.");
+            cmdChannel.writeResponse("500 Syntax error, command unrecognized.");
         }
     }
 }

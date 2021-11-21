@@ -1,11 +1,9 @@
 package com.ss.ftpserver.ftpService;
 
 import com.google.gson.Gson;
-import com.ss.ftpserver.gui.MyApplication;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class User {
     public String name;
@@ -37,9 +35,7 @@ public class User {
         List<User> users = new ArrayList<>();
         users.add(legal);
         users.add(illegal);
-        Gson gson = new Gson();
-        String result = gson.toJson(users);
-        Settings.writeDefaultUsers(result);//在shared preference中写入默认的用户
+        String result = Settings.writeUsers(users);
         return result;
     }
 }

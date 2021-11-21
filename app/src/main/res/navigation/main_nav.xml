@@ -18,18 +18,23 @@
         android:id="@+id/usersFragment"
         android:name="com.ss.ftpserver.gui.UsersFragment"
         android:label="User List"
-        tools:layout="@layout/fragment_users" >
+        tools:layout="@layout/fragment_users">
         <action
             android:id="@+id/action_usersFragment_to_addUserFragment"
-            app:destination="@id/addUserFragment" />
+            app:destination="@id/addUserFragment"/>
     </fragment>
     <dialog
         android:id="@+id/addUserFragment"
         android:name="com.ss.ftpserver.gui.AddUserFragment"
         android:label="Add User"
-        tools:layout="@layout/fragment_add_user" >
+        tools:layout="@layout/fragment_add_user">
         <action
             android:id="@+id/action_addUserFragment_to_usersFragment"
-            app:destination="@id/usersFragment" />
+            app:destination="@id/usersFragment">
+            <argument
+                android:name="newUser"
+                app:argType="string[]"
+                app:nullable="true" />
+        </action>
     </dialog>
 </navigation>

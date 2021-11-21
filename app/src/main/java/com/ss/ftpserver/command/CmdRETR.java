@@ -3,13 +3,12 @@ package com.ss.ftpserver.command;
 import android.util.Log;
 
 import com.ss.ftpserver.exception.DataLinkOpenException;
-import com.ss.ftpserver.ftpService.CommandChannel;
 import com.ss.ftpserver.ftpService.Settings;
 
 import java.io.File;
 import java.io.IOException;
 
-public class CmdRETR implements Command {
+public class CmdRETR extends Command {
     private static final String TAG = "CmdRETR";
 
     /**
@@ -21,24 +20,25 @@ public class CmdRETR implements Command {
      * 简化处理，没有目录结构，pathname就是固定文件夹下的文件名
      */
     @Override
-    public void execute(String filename, CommandChannel channel) {
+    public void run() {
         Log.d(TAG, "execute: ");
-        File file = new File(Settings.getFilePath() + File.separator + filename);
+        if (!cmdChannel.isLogIn()){//客户端不应该允许没有登陆的用户上传下载，服务端只是检查一下防止前端绕过
+            cmdChannel.writeResponse("332 Need account for action.");
+            return;
+        }
+        File file = new File(Settings.getFilePath() + File.separator + arg);
+        Log.d(TAG, "execute: "+file.getPath());
         if (!file.exists()) {
-            channel.writeResponse("550 Requested action not taken. File not found.");
+            cmdChannel.writeResponse("550 Requested action not taken. File not found.");
         } else {//文件存在
-            if (channel.getDataChannel()!=null) {
-                channel.writeResponse("425 Can’t open data connection.Close data connection.");
-                return;
-            }
             try {
-                channel.getDataChannel().sendFile(file);
+                cmdChannel.getDataChannel().sendFile(file);
             } catch (DataLinkOpenException e) {
-                channel.writeResponse("425 Can’t open data connection.Close data connection.");
+                cmdChannel.writeResponse("425 Can’t open data connection.Close data connection.");
             }  catch (IOException e) {
-                channel.writeResponse("451 Requested action aborted: local error in processing.");
+                cmdChannel.writeResponse("451 Requested action aborted: local error in processing.");
             } finally {//关闭socket连接
-                channel.getDataChannel().cleanUp();
+                cmdChannel.getDataChannel().closeSocket();
             }
         }
     }

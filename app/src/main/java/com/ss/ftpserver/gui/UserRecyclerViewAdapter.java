@@ -2,14 +2,21 @@ package com.ss.ftpserver.gui;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AppOpsManager;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.ss.ftpserver.databinding.UserListItemLayoutBinding;
+import com.ss.ftpserver.ftpService.Settings;
 import com.ss.ftpserver.ftpService.User;
 
 import java.util.List;
+import java.util.Set;
 
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.UserViewHolder> {
 
@@ -32,6 +39,12 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         holder.name.setText(users.get(position).name);
         holder.pass.setText(users.get(position).pass);
         holder.legal.setText(users.get(position).isLegal?"legal":"illegal");
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteUser(holder.getAbsoluteAdapterPosition());
+            }
+        });
     }
 
     @Override
@@ -43,6 +56,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         public final TextView name;
         public final TextView pass;
         public final TextView legal;
+        public final ImageButton deleteButton;
         public User user;
 
         public UserViewHolder(UserListItemLayoutBinding binding) {
@@ -50,7 +64,24 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             name = binding.userName;
             pass = binding.userPassword;
             legal = binding.userLegal;
+            deleteButton = binding.userDeleteBtn;
         }
     }
 
+    public void deleteUser(int position){
+        users.remove(position);
+        notifyItemRemoved(position);
+        notifyDataSetChanged();
+        //保存sp中的user信息
+        Settings.writeUsers(users);
+    }
+
+    public void addUser(User user){
+        int position = users.size();
+        users.add(position,user);
+        //添加动画
+        notifyItemInserted(position);
+        //保存sp中的user信息
+        Settings.writeUsers(users);
+    }
 }

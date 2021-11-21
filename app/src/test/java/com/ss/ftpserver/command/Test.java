@@ -1,9 +1,13 @@
 package com.ss.ftpserver.command;
 
-import com.ss.ftpserver.ftpService.Settings;
-
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Test {
 
+    @org.junit.Test
+    public void test(){
+
+    }
 }

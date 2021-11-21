@@ -79,6 +79,7 @@ public class DataChannel {
                     bo.write(buffer);
                 }
             } catch (IOException e) {
+                Log.e(TAG, "sendFile: ioexception");
                 throw e;
             }
         } else {//ascii码模式
@@ -90,6 +91,7 @@ public class DataChannel {
                     bw.write(line + "\r\n");
                 }
             } catch (IOException e) {
+                Log.e(TAG, "sendFile: ioexception");
                 throw e;
             }
         }
@@ -138,14 +140,22 @@ public class DataChannel {
         commandChannel.writeResponse("250 Requested file action okay, completed.");
     }
 
-    @SneakyThrows
-    public void cleanUp() {
-        if (portMode){
-            portSocket.close();
-        }else {
-            pasvListenSocket.close();
-            pasvClientSocket.close();
+    /**
+     * 每次文件传输完的清理工作
+     */
+    public void closeSocket() {
+        try {
+            if (portMode) {
+                portSocket.close();
+                portSocket = null;
+            } else {
+                pasvListenSocket.close();
+                pasvListenSocket = null;
+                pasvClientSocket.close();
+                pasvClientSocket = null;
+            }
+            Log.d(TAG, "closeSocket: cleanup finish");
+        }catch (Exception ignore){
         }
-        commandChannel.setDataChannel(null);
     }
 }

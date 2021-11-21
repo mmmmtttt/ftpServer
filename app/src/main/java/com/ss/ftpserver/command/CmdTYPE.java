@@ -4,28 +4,29 @@ import android.util.Log;
 
 import com.ss.ftpserver.ftpService.CommandChannel;
 
-public class CmdTYPE implements Command{
+public class CmdTYPE extends Command{
     private static final String TAG = "CmdTYPE";
+
     /**
      * TYPE <SP> <type-code> <CRLF>
      * type-code 为 A(ascii) 或者 B(binary)
      * 默认A
      */
     @Override
-    public void execute(String typeCode, CommandChannel channel) {
+    public void run() {
         Log.d(TAG, "execute: ");
         String response = "200 Command okay.";
-        switch (typeCode){
+        switch (arg){
             case "A":
-                channel.getDataChannel().setBinaryMode(false);
+                cmdChannel.getDataChannel().setBinaryMode(false);
                 break;
             case "B":
-                channel.getDataChannel().setBinaryMode(true);
+                cmdChannel.getDataChannel().setBinaryMode(true);
                 break;
             default:
                 response = "500 Syntax error, command unrecognized.";
                 break;
         }
-        channel.writeResponse(response);
+        cmdChannel.writeResponse(response);
     }
 }

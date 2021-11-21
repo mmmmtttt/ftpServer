@@ -4,15 +4,16 @@ import android.util.Log;
 
 import com.ss.ftpserver.ftpService.CommandChannel;
 
-public class CmdQUIT implements Command{
+public class CmdQUIT extends Command{
     private static final String TAG = "CmdQUIT";
+
     /**
      * arg应该是""
      */
     @Override
-    public void execute(String arg, CommandChannel channel) {
+    public void run() {
         Log.d(TAG, "execute: ");
-        channel.closeConnection(true);
-        channel.writeResponse("221 Service closing control connection.");
+        cmdChannel.writeResponse("221 Service closing control connection.");
+        cmdChannel.cleanUp();
     }
 }

@@ -3,7 +3,6 @@ package com.ss.ftpserver.command;
 import android.util.Log;
 
 import com.ss.ftpserver.exception.DataLinkOpenException;
-import com.ss.ftpserver.ftpService.CommandChannel;
 import com.ss.ftpserver.ftpService.Settings;
 
 import java.io.File;
@@ -11,8 +10,9 @@ import java.io.IOException;
 
 import lombok.SneakyThrows;
 
-public class CmdSTOR implements Command{
+public class CmdSTOR extends Command{
     private static final String TAG = "CmdSTOR";
+
     /**
      * STOR <SP> <pathname> <CRLF>
      *
@@ -26,24 +26,25 @@ public class CmdSTOR implements Command{
      */
     @SneakyThrows
     @Override
-    public void execute(String filename, CommandChannel channel) {
+    public void run() {
         Log.d(TAG, "execute: ");
-        File file = new File(Settings.getFilePath() + File.separator + filename);
+        if (!cmdChannel.isLogIn()){
+            cmdChannel.writeResponse("332 Need account for action.");
+            return;
+        }
+        File file = new File(Settings.getFilePath() + File.separator + arg);
+        Log.d(TAG, "execute: "+file.getPath());
         if (!file.exists()) {
             file.createNewFile();
         }
-        if (channel.getDataChannel() == null) {
-            channel.writeResponse("425 Can’t open data connection.");
-            return;
-        }
         try {
-            channel.getDataChannel().receiveFile(file);
+            cmdChannel.getDataChannel().receiveFile(file);
         } catch (DataLinkOpenException e) {
-            channel.writeResponse("425 Can’t open data connection.Close data connection.");
+            cmdChannel.writeResponse("425 Can’t open data connection.Close data connection.");
         }  catch (IOException e) {
-            channel.writeResponse("451 Requested action aborted: local error in processing.");
+            cmdChannel.writeResponse("451 Requested action aborted: local error in processing.");
         } finally {//关闭socket连接
-            channel.getDataChannel().cleanUp();
+            cmdChannel.getDataChannel().closeSocket();
         }
     }
 }

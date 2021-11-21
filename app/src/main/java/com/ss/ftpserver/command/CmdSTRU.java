@@ -4,8 +4,9 @@ import android.util.Log;
 
 import com.ss.ftpserver.ftpService.CommandChannel;
 
-public class CmdSTRU implements Command {
+public class CmdSTRU extends Command {
     private static final String TAG = "CmdSTRU";
+
     /**
      * STRU <SP> <structure-code> <CRLF>
      * F - File (no record structure)
@@ -15,12 +16,12 @@ public class CmdSTRU implements Command {
      * 简化处理，都按照F来实现
      */
     @Override
-    public void execute(String typeCode, CommandChannel channel) {
+    public void run() {
         Log.d(TAG, "execute: ");
-        if ("F".equals(typeCode) || "R".equals(typeCode) || "P".equals(typeCode)) {
-            channel.writeResponse("200 Command okay.");
+        if ("F".equals(arg) || "R".equals(arg) || "P".equals(arg)) {
+            cmdChannel.writeResponse("200 Command okay.");
         } else {
-            channel.writeResponse("500 Syntax error, command unrecognized.");
+            cmdChannel.writeResponse("500 Syntax error, command unrecognized.");
         }
     }
 }

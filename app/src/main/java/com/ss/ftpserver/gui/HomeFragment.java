@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +28,13 @@ import com.ss.ftpserver.databinding.FragmentHomeBinding;
 import com.ss.ftpserver.ftpService.FtpService;
 
 public class HomeFragment extends Fragment {
-    private FragmentHomeBinding binding;//使用视图绑定代替findViewById
+    private static FragmentHomeBinding binding;//使用视图绑定代替findViewById
+
+    @Override
+    public void onStart() {
+
+        super.onStart();
+    }
 
     @Override
     public void onResume() {
@@ -56,6 +64,7 @@ public class HomeFragment extends Fragment {
                 } else {
                     Intent stopIntent = new Intent(activity, FtpService.class);
                     activity.stopService(stopIntent);
+                    binding.serverIp.setText("");
                 }
             }});
     }
@@ -66,4 +75,16 @@ public class HomeFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+    /**
+     * 从ftpService异步传递消息，在主页面显示server运行的ip和端口
+     */
+    public static Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            binding.serverIp.setText("address\n"+msg.getData().getString("serverip"));
+            return false;
+        }
+    });
+
 }

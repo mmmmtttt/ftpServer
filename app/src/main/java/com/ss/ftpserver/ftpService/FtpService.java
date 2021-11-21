@@ -8,7 +8,9 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -18,21 +20,21 @@ import com.ss.ftpserver.R;
 import com.ss.ftpserver.gui.HomeFragment;
 import com.ss.ftpserver.gui.MainActivity;
 
-public class FtpService extends Service {
-    ServerMainThread serverMainThread;
+import java.io.IOException;
 
-    public FtpService() {
-    }
+public class FtpService extends Service {
+    private static final String TAG = "FtpService";
+    ServerMainThread serverMainThread;
 
     @Override
     public void onCreate() {
-        Log.d("FTPService","create");
+        Log.d("FTPService", "create");
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("FTPService","startCommand");
+        Log.d("FTPService", "startCommand");
         setNotification();
         serverMainThread = new ServerMainThread();
         serverMainThread.start();//开启服务器循环
@@ -42,7 +44,7 @@ public class FtpService extends Service {
     /**
      * 启动前台服务时显示通知
      */
-    private void setNotification(){
+    private void setNotification() {
         //设置通知渠道
         NotificationChannel chan = new NotificationChannel(
                 "MyChannelId",
@@ -53,28 +55,34 @@ public class FtpService extends Service {
 
         //点击通知后启动main activity
         Intent notifyIntent = new Intent(this, MainActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(this,0,notifyIntent,PendingIntent.FLAG_IMMUTABLE);
-        Notification notification = new NotificationCompat.Builder(this,"MyChannelId")
+        PendingIntent pi = PendingIntent.getActivity(this, 0, notifyIntent, PendingIntent.FLAG_IMMUTABLE);
+        String content = Settings.getLocalIpAddress().getHostAddress() + ":" + Settings.getPort();
+        Notification notification = new NotificationCompat.Builder(this, "MyChannelId")
                 .setContentTitle("ftp server is running at")
-                .setContentText(Settings.getLocalIpAddress().getHostAddress()+":"+Settings.getPort())
+                .setContentText(content)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pi)
                 .setAutoCancel(true)
                 .build();
-        startForeground(1,notification);//开启前台任务，优先级更高，不会被系统自动回收
-    }
-
-    @Override
-    public void onDestroy() {
-        //释放资源
-        serverMainThread.cleanUp();
-        super.onDestroy();
+        //给homefragment发送消息更新ui
+        Message msg = HomeFragment.handler.obtainMessage();
+        Bundle data = new Bundle();
+        data.putString("serverip",content);
+        msg.setData(data);
+        msg.sendToTarget();
+        startForeground(1, notification);//开启前台任务，优先级更高，不会被系统自动回收
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        serverMainThread.cleanUp();
+        super.onDestroy();
     }
 }

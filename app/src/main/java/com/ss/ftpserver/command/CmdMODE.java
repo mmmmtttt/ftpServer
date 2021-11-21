@@ -4,8 +4,9 @@ import android.util.Log;
 
 import com.ss.ftpserver.ftpService.CommandChannel;
 
-public class CmdMODE implements Command{
+public class CmdMODE extends Command{
     private static final String TAG = "CmdMODE";
+
     /**
      * MODE <SP> <mode-code> <CRLF>
      * S - Stream
@@ -15,12 +16,12 @@ public class CmdMODE implements Command{
      * 简化处理，一律按stream处理
      */
     @Override
-    public void execute(String typeCode, CommandChannel channel) {
+    public void run() {
         Log.d(TAG, "execute: ");
-        if ("S".equals(typeCode) || "B".equals(typeCode) || "C".equals(typeCode)) {
-            channel.writeResponse("200 Command okay.");
+        if ("S".equals(arg) || "B".equals(arg) || "C".equals(arg)) {
+            cmdChannel.writeResponse("200 Command okay.");
         } else {
-            channel.writeResponse("500 Syntax error, command unrecognized.");
+            cmdChannel.writeResponse("500 Syntax error, command unrecognized.");
         }
     }
 }

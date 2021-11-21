@@ -1,5 +1,6 @@
 package com.ss.ftpserver.ftpService;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -20,7 +21,8 @@ import java.util.List;
  * 管理shared preference中的数据
  */
 public class Settings {
-    static SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
+    private static final String TAG = "Settings";
+    static SharedPreferences sp = MyApplication.getContext().getSharedPreferences("users", Context.MODE_PRIVATE);
     static List<User> userList = null;
     static InetAddress ip = null;
 
@@ -29,7 +31,11 @@ public class Settings {
      */
     public static List<User> getUsers() {
         if (userList == null) {//如果为null，先从shared preference中读取user
-            String users = sp.getString("users", User.getDefaultUsers());
+            String users = sp.getString("users", "");
+            if ("".equals(users)){
+                users = User.getDefaultUsers();//在其中把默认的user写入了shared preference.
+            }
+            Log.d(TAG, "getUsers: "+users);
             //从json字符串恢复成List<User>
             Gson gson = new Gson();
             userList = gson.fromJson(users, new TypeToken<List<User>>() {
@@ -41,19 +47,24 @@ public class Settings {
     /**
      * sp中没有user信息时写入默认的user信息
      */
-    public static void writeDefaultUsers(String content) {
+    public static String writeUsers(List<User> users) {
+        Gson gson = new Gson();
+        String result = gson.toJson(users);
         SharedPreferences.Editor editor = sp.edit();
-        editor.putString("user", content);
-        editor.apply();
+        editor.putString("users", result);
+        editor.commit();
+        Log.d(TAG, "writeUsers: "+result );
+        return result;
     }
 
     public static int getPort() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
         String port = sp.getString("port", "2121");
         return Integer.parseInt(port);
     }
 
     public static String getFilePath(){
-        return MyApplication.getContext().getFilesDir().getPath();
+        return MyApplication.getContext().getExternalFilesDir(null).getPath();
     }
 
     /**
